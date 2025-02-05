@@ -44,7 +44,7 @@ export class TMAPI {
             `x-tm-date:${tmDate}`
         ].join("\n");
         stringToSign += "\n";
-		console.log(stringToSign);
+		//console.log(stringToSign);
 
         const signature = createHmac("sha256", this.tmAPIKey)
             .update(stringToSign)
@@ -97,16 +97,16 @@ export class TMAPI {
 		const headers = this.GetAuthHeaders(url, request.method);
 		const response = await fetch(request, { headers });
 		if (response.status === 200) {
-			console.log("hooray it worked");
+			//console.log("hooray it worked");
 			const resultJson = await response.json() as DivisionsDataFromTM;
 			return resultJson.divisions;
 		}
 		else {
 			console.log("uh oh something went wrong");
 			const resultJson = await response.json();
-			console.log(resultJson);
-			console.log(response.status);
-			console.log(response.statusText);
+			//console.log(resultJson);
+			//console.log(response.status);
+			//console.log(response.statusText);
 			return [];
 		}
 	}
@@ -129,20 +129,20 @@ export class TMAPI {
 				"Access-Control-Allow-Origin": "*"
             }
         });
-		console.log(url);
+		//console.log(url);
 		const headers = this.GetAuthHeaders(url, request.method);
 		const response = await fetch(request, { headers });
 		if (response.status === 200) {
-			console.log("hooray it worked");
+			//console.log("hooray it worked");
 			const resultJson = await response.json() as EventResultsFromTM;
 			return resultJson.event;
 		}
 		else {
 			console.log("uh oh something went wrong");
 			const resultJson = await response.json();
-			console.log(resultJson);
-			console.log(response.status);
-			console.log(response.statusText);
+			//console.log(resultJson);
+			//console.log(response.status);
+			//console.log(response.statusText);
 			return {name: "", code: ""};
 		}
 	}
@@ -167,22 +167,22 @@ export class TMAPI {
 				"x-div-id": divisionID.toString()
             }
         });
-		console.log(request.headers);
+		//console.log(request.headers);
 		const headers = this.GetAuthHeaders(authURL, request.method);
 		headers.append("x-div-id", divisionID.toString());
 		headers.append("x-tm-host", this.baseTMURL);
 		const response = await fetch(request, { headers });
 		if (response.status === 200) {
-			console.log("hooray it worked");
+			//console.log("hooray it worked");
 			const resultJson = await response.json() as any;
 			return resultJson.matches;
 		}
 		else {
 			console.log("uh oh something went wrong");
 			const resultJson = await response.json();
-			console.log(resultJson);
-			console.log(response.status);
-			console.log(response.statusText);
+			//console.log(resultJson);
+			//console.log(response.status);
+			//console.log(response.statusText);
 			return [];
 		}
 	}
@@ -207,22 +207,22 @@ export class TMAPI {
 				"x-div-id": divisionID.toString()
             }
         });
-		console.log(request.headers);
+		//console.log(request.headers);
 		const headers = this.GetAuthHeaders(authURL, request.method);
 		headers.append("x-div-id", divisionID.toString());
 		headers.append("x-tm-host", this.baseTMURL);
 		const response = await fetch(request, { headers });
 		if (response.status === 200) {
-			console.log("hooray it worked");
+			//console.log("hooray it worked");
 			const resultJson = await response.json() as QualiRankingsFromTM;
 			return resultJson.rankings;
 		}
 		else {
 			console.log("uh oh something went wrong");
 			const resultJson = await response.json();
-			console.log(resultJson);
-			console.log(response.status);
-			console.log(response.statusText);
+			//console.log(resultJson);
+			//console.log(response.status);
+			//console.log(response.statusText);
 			return [];
 		}
 	}
@@ -247,16 +247,16 @@ export class TMAPI {
 		const headers = this.GetAuthHeaders(url, request.method);
 		const response = await fetch(request, { headers });
 		if (response.status === 200) {
-			console.log("hooray it worked");
+			//console.log("hooray it worked");
 			const resultJson = await response.json() as SkillsResultsFromTM;
 			return resultJson.skillsRankings;
 		}
 		else {
 			console.log("uh oh something went wrong");
 			const resultJson = await response.json();
-			console.log(resultJson);
-			console.log(response.status);
-			console.log(response.statusText);
+			//console.log(resultJson);
+			//console.log(response.status);
+			//console.log(response.statusText);
 			return [];
 		}
 	}

@@ -12,6 +12,8 @@ export default function QualiCrawlerLanding() {
 	return (
 		<div>
 			<h1>This is the landing page for the quali crawler</h1>
+			<h1>TM currently doesn't update the qualification rankings without shutting down TM and relanching it...</h1>
+			<h1>Complete this page when this is resolved</h1>
 		</div>
 	)
 }
