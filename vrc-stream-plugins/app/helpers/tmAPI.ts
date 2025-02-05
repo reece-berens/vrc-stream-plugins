@@ -147,6 +147,46 @@ export class TMAPI {
 		}
 	}
 
+	public async GetMatchesData(divisionID: number): Promise<TM_QualiRankingData[]> {
+		console.log("MATCHES");
+		if (this.tokenExpiration < Date.now()) {
+			//need to get a new token
+			await this.GetBearerToken();
+		}
+		if (this.bearerToken === null || this.bearerToken === "") {
+			console.log("no token for request, fail this thing");
+			return [];
+		}
+		const authURL = new URL(`/api/matches/${divisionID}`, this.baseTMURL);
+		const sendURL = new URL("/matches", this.baseAuthURL);
+		const request = new Request(sendURL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+				//"Access-Control-Allow-Origin": "*"
+				"x-div-id": divisionID.toString()
+            }
+        });
+		console.log(request.headers);
+		const headers = this.GetAuthHeaders(authURL, request.method);
+		headers.append("x-div-id", divisionID.toString());
+		headers.append("x-tm-host", this.baseTMURL);
+		const response = await fetch(request, { headers });
+		if (response.status === 200) {
+			console.log("hooray it worked");
+			const resultJson = await response.json() as any;
+			return resultJson.matches;
+		}
+		else {
+			console.log("uh oh something went wrong");
+			const resultJson = await response.json();
+			console.log(resultJson);
+			console.log(response.status);
+			console.log(response.statusText);
+			return [];
+		}
+	}
+
 	public async GetQualiRankingsData(divisionID: number): Promise<TM_QualiRankingData[]> {
 		console.log("QUALI RANKINGS");
 		if (this.tokenExpiration < Date.now()) {

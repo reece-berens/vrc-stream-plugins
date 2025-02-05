@@ -42,7 +42,6 @@ export default function LiveSkillsOutput() {
 	let thisTmURL = decodeURIComponent(tmURLParam);
 	let thisTmKey = decodeURIComponent(tmKeyParam);
 
-	console.log(process.env.NEXT_PUBLIC_BASE_AUTH_URL);
 	let tmAPI = useTMAPI(process.env.NEXT_PUBLIC_BASE_AUTH_URL || "", thisTmURL, thisTmKey);
 
 	let thisWidth = widthParam;

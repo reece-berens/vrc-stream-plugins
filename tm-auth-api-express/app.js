@@ -6,6 +6,20 @@ const port = 7263;
 
 var cachedResult = null;
 
+var rankingCache = {
+	jsoncache: {
+		rankings: []
+	},
+	lastModified: "Thu, 01 Feb 1900 06:00:00 GMT"
+}
+
+var matchesCache = {
+	jsoncache: {
+		matches: []
+	},
+	lastModified: "Thu, 01 Feb 1900 06:00:00 GMT"
+}
+
 app.get("/", (request, response) => {
 	response.send("<!DOCTYPE html><html><body><h1>hello from express</h1></body></html>");
 });
@@ -54,15 +68,15 @@ app.post("/", async (request, response) => {
 });
 
 app.get("/rankings", async(request, response) => {
+	console.log();
+	console.log();
 	const tmHost = request.header("x-tm-host");
 	const tmAuth = request.header("Authorization");
 	const tmSignature = request.header("x-tm-signature");
 	const tmTime = request.header("x-tm-date");
 	const divID = request.header("x-div-id");
-	console.log(tmHost);
-	console.log(tmAuth);
 	const url = new URL(`/api/rankings/${divID}/QUAL`, tmHost);
-	console.log(url);
+	console.log(`If-Modified-Since header for the request is ${rankingCache.lastModified}`);
 	const tmReq = new Request(url, {
 		method: "GET",
 		headers: {
@@ -70,15 +84,82 @@ app.get("/rankings", async(request, response) => {
 			"Authorization": tmAuth,
 			"x-tm-signature": tmSignature,
 			"x-tm-date": tmTime,
-			"Host": url.host
+			"Host": url.host,
+			"If-Modified-Since": rankingCache.lastModified
 		}
 	});
+	console.log("starting fetch of rank data");
 	const tmResp = await fetch(tmReq);
-	if (tmResp.ok) {
+	console.log("done with fetch of rank data");
+	if (tmResp.status === 304) {
+		//this is a cached result, send back what we got previously
+		console.log("status is 304, send back what we got previously");
+		response.send(rankingCache.jsoncache);
+	}
+	else if (tmResp.status === 200) {
 		const respJson = await tmResp.json();
+		if (tmResp.headers.has("Last-Modified")) {
+			var lastModified = tmResp.headers.get("Last-Modified") ?? "";
+			console.log("we have a last modified header, caching the stuff");
+			console.log(lastModified);
+			rankingCache.jsoncache = respJson;
+			rankingCache.lastModified = lastModified;
+		}
+		//console.log(respJson);
 		response.send(respJson);
 	}
 	else {
+		console.log("some sort of error from TM");
+		console.log(tmResp);
+		response.statusCode = 500;
+		response.statusMessage = "Bad TM Request";
+	}
+});
+
+app.get("/matches", async(request, response) => {
+	console.log();
+	console.log();
+	const tmHost = request.header("x-tm-host");
+	const tmAuth = request.header("Authorization");
+	const tmSignature = request.header("x-tm-signature");
+	const tmTime = request.header("x-tm-date");
+	const divID = request.header("x-div-id");
+	const url = new URL(`/api/matches/${divID}`, tmHost);
+	console.log(`If-Modified-Since header for the request is ${matchesCache.lastModified}`);
+	const tmReq = new Request(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": tmAuth,
+			"x-tm-signature": tmSignature,
+			"x-tm-date": tmTime,
+			"Host": url.host,
+			//"If-Modified-Since": rankingCache.lastModified
+		}
+	});
+	console.log("starting fetch of matches data");
+	const tmResp = await fetch(tmReq);
+	console.log("done with fetch of matches data");
+	if (tmResp.status === 304) {
+		//this is a cached result, send back what we got previously
+		console.log("status is 304, send back what we got previously");
+		response.send(matchesCache.jsoncache);
+	}
+	else if (tmResp.status === 200) {
+		const respJson = await tmResp.json();
+		if (tmResp.headers.has("Last-Modified")) {
+			var lastModified = tmResp.headers.get("Last-Modified") ?? "";
+			console.log("we have a last modified header, caching the stuff");
+			console.log(lastModified);
+			matchesCache.jsoncache = respJson;
+			matchesCache.lastModified = lastModified;
+		}
+		//console.log(respJson);
+		response.send(respJson);
+	}
+	else {
+		console.log("some sort of error from TM");
+		console.log(tmResp);
 		response.statusCode = 500;
 		response.statusMessage = "Bad TM Request";
 	}
